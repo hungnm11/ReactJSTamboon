@@ -5,10 +5,51 @@ import fetch from 'isomorphic-fetch';
 
 import { summaryDonations } from './helpers';
 
+const Row = styled.div`
+  &::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+`;
+
+const Title = styled.h1`
+  font-size: 1.5em;
+  text-align: center;
+`;
+
+const Image = styled.img`
+  width: 100%;
+  height: auto;
+`;
+
+const Column = styled.div`
+  float: left;
+  ${({ xs }) => (xs ? getWidthString(xs) : "width: 100%")};
+
+  @media only screen and (min-width: 768px) {
+    ${({ sm }) => sm && getWidthString(sm)};
+  }
+
+  @media only screen and (min-width: 992px) {
+    ${({ md }) => md && getWidthString(md)};
+  }
+
+  @media only screen and (min-width: 1200px) {
+    ${({ lg }) => lg && getWidthString(lg)};
+  }
+`;
 
 const Card = styled.div`
   margin: 10px;
   border: 1px solid #ccc;
+`;
+
+const Button = styled.button`
+  font-size: 1.5em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border-radius: 3px;
 `;
 
 export default connect((state) => state)(
@@ -25,13 +66,14 @@ export default connect((state) => state)(
     componentDidMount() {
       const self = this;
       fetch('http://localhost:3001/charities')
-        .then(function(resp) { return resp.json(); })
-        .then(function(data) {
-          self.setState({ charities: data }) });
+        .then(function (resp) { return resp.json(); })
+        .then(function (data) {
+          self.setState({ charities: data })
+        });
 
       fetch('http://localhost:3001/payments')
-        .then(function(resp) { return resp.json() })
-        .then(function(data) {
+        .then(function (resp) { return resp.json() })
+        .then(function (data) {
           self.props.dispatch({
             type: 'UPDATE_TOTAL_DONATE',
             amount: summaryDonations(data.map((item) => (item.amount))),
@@ -41,24 +83,28 @@ export default connect((state) => state)(
 
     render() {
       const self = this;
-      const cards = this.state.charities.map(function(item, i) {
+      const cards = this.state.charities.map(function (item, i) {
         const payments = [10, 20, 50, 100, 500].map((amount, j) => (
           <label key={j}>
             <input
               type="radio"
               name="payment"
-              onClick={function() {
+              onClick={function () {
                 self.setState({ selectedAmount: amount })
               }} /> {amount}
           </label>
         ));
 
         return (
-          <Card key={i}>
-            <p>{item.name}</p>
-            {payments}
-            <button onClick={handlePay.call(self, item.id, self.state.selectedAmount, item.currency)}>Pay</button>
-          </Card>
+          <Column key={i} xs="12" sm="6" md="6">
+            <Card >
+              <Image src="https://cdn.vaildaily.com/wp-content/uploads/sites/7/2016/09/CvrTrain-VDN-092816-1240x826.jpg" alt="" />
+              <p>{item.name}</p>
+              <Button>Donate</Button>
+              {payments}
+              <button onClick={handlePay.call(self, item.id, self.state.selectedAmount, item.currency)}>Pay</button>
+            </Card>
+          </Column>
         );
       });
 
@@ -74,10 +120,13 @@ export default connect((state) => state)(
 
       return (
         <div>
-          <h1>Tamboon React</h1>
+          <Title>Tamboon React</Title>
           <p>All donations: {donate}</p>
           <p style={style}>{message}</p>
-          {cards}
+          <Row>
+            {cards}
+          </Row>
+          
         </div>
       );
     }
@@ -86,13 +135,13 @@ export default connect((state) => state)(
 
 function handlePay(id, amount, currency) {
   const self = this;
-  return function() {
+  return function () {
     fetch('http://localhost:3001/payments', {
       method: 'POST',
       body: `{ "charitiesId": ${id}, "amount": ${amount}, "currency": "${currency}" }`,
     })
-      .then(function(resp) { return resp.json(); })
-      .then(function() {
+      .then(function (resp) { return resp.json(); })
+      .then(function () {
         self.props.dispatch({
           type: 'UPDATE_TOTAL_DONATE',
           amount,
@@ -102,7 +151,7 @@ function handlePay(id, amount, currency) {
           message: `Thanks for donate ${amount}!`,
         });
 
-        setTimeout(function() {
+        setTimeout(function () {
           self.props.dispatch({
             type: 'UPDATE_MESSAGE',
             message: '',
@@ -118,3 +167,5 @@ function getWidthString(span) {
   let width = span / 12 * 100;
   return `width: ${width}%;`;
 }
+
+
