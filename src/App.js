@@ -23,6 +23,16 @@ const Image = styled.img`
   height: auto;
 `;
 
+const P = styled.p`
+  float: left;
+  display: flex;
+  padding-left: 10px;
+`;
+
+const FooterItem = styled.div`
+  display: flex;
+`;
+
 const Column = styled.div`
   float: left;
   ${({ xs }) => (xs ? getWidthString(xs) : "width: 100%")};
@@ -42,14 +52,26 @@ const Column = styled.div`
 
 const Card = styled.div`
   margin: 10px;
-  border: 1px solid #ccc;
+  background-color: #ffffff;
+  margin: 12px 12px 6px 12px;
+  padding: 0 0 10px 0;
+  box-sizing: border-box;
+  -webkit-box-shadow: -2px 2px 5px 0px rgba(179, 179, 179, 0.58);
+  -moz-box-shadow: -2px 2px 5px 0px rgba(179, 179, 179, 0.58);
+  box-shadow: -2px 2px 5px 0px rgba(179, 179, 179, 0.58);
 `;
 
 const Button = styled.button`
-  font-size: 1.5em;
-  margin: 1em;
-  padding: 0.25em 1em;
+  font-size: 1em;
+  margin: 0.2em;
+  padding: 10px 1em;
   border-radius: 3px;
+  background-color: #ffffff;
+  border: 1px solid #136bb5;
+  color: #136bb5;
+  align-self: center;
+  margin-left: auto;
+  margin-right: 10px;
 `;
 
 export default connect((state) => state)(
@@ -60,6 +82,7 @@ export default connect((state) => state)(
       this.state = {
         charities: [],
         selectedAmount: 10,
+        isDonate: false
       };
     }
 
@@ -81,6 +104,10 @@ export default connect((state) => state)(
         })
     }
 
+    handleDonateButton = () => {
+      console.log('Donate')
+    }
+
     render() {
       const self = this;
       const cards = this.state.charities.map(function (item, i) {
@@ -99,8 +126,10 @@ export default connect((state) => state)(
           <Column key={i} xs="12" sm="6" md="6">
             <Card >
               <Image src="https://cdn.vaildaily.com/wp-content/uploads/sites/7/2016/09/CvrTrain-VDN-092816-1240x826.jpg" alt="" />
-              <p>{item.name}</p>
-              <Button>Donate</Button>
+              <FooterItem>
+                <P>{item.name}</P>
+                <Button>Donate</Button>
+              </FooterItem>
               {payments}
               <button onClick={handlePay.call(self, item.id, self.state.selectedAmount, item.currency)}>Pay</button>
             </Card>
@@ -126,7 +155,7 @@ export default connect((state) => state)(
           <Row>
             {cards}
           </Row>
-          
+
         </div>
       );
     }
