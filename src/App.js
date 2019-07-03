@@ -100,6 +100,13 @@ const Modal = styled.div`
   flex-direction: column;
 `;
 
+const Close = styled.div`
+  padding 10px;
+  position: absolute;
+  top:0;
+  right: 0;
+`;
+
 const Label = styled.label`
   float: left;
 `;
@@ -158,6 +165,9 @@ export default connect((state) => state)(
                 }} >Donate</Button>
               </FooterItem>
               {self.state.isDonate === item.id && (<Modal>
+                <Close onClick={function () {
+                  self.setState({ isDonate: false })
+                }}>X</Close>
                 <p>Select the amount to donate (USD)</p>
               <P>{payments}</P>
               <Pay onClick={handlePay.call(self, item.id, self.state.selectedAmount, item.currency)}>Pay</Pay></Modal>)}
