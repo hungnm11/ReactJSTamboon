@@ -175,7 +175,6 @@ export default connect((state) => state)(
       };
       const donate = this.props.donate;
       const message = this.props.message;
-
       return (
         <div>
           <Title>Tamboon React</Title>
@@ -192,6 +191,7 @@ export default connect((state) => state)(
 );
 
 function handlePay(id, amount, currency) {
+  
   const self = this;
   return function () {
     fetch('http://localhost:3001/payments', {
